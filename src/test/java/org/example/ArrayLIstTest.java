@@ -3,6 +3,8 @@ package org.example;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ArrayListTest {
@@ -96,5 +98,117 @@ class ArrayListTest {
         list.add(1);
         assertThrows(IndexOutOfBoundsException.class, () -> list.get(2));
         assertThrows(IndexOutOfBoundsException.class, () -> list.add(2, 7));
+    }
+
+    @Test
+    void testAddElementLarge(){
+        for(int i = 0; i < 1000; ++i){
+            list.add(i);
+        }
+
+        assertEquals(list.size(), 1000);
+        assertEquals(list.get(0), 0);
+        assertEquals(list.get(999), 999);
+    }
+
+    @Test
+    void testAddElementAtIndexLarge() {
+        for(int i = 0; i < 997; ++i){
+            list.add(i);
+        }
+
+        list.add(0xaa, 500);
+        list.add(0xbb, 600);
+        list.add(0xcc, 700);
+
+        assertEquals(list.size(), 1000);
+        assertEquals(list.get(0), 0);
+
+        assertEquals(list.get(500), 0xaa);
+        assertEquals(list.get(600), 0xbb);
+        assertEquals(list.get(700), 0xcc);
+
+        assertEquals(list.get(999), 996);
+    }
+
+    @Test
+    void testGetElementLarge(){
+        for(int i = 0; i < 1000; ++i){
+            list.add(i);
+        }
+
+        assertEquals(list.get(0), 0);
+        assertEquals(list.get(500), 500);
+        assertEquals(list.get(list.size() - 1), list.size() - 1);
+    }
+
+    @Test
+    void testRemoveElementLarge() {
+        for (int i = 0; i < 1000; ++i) {
+            list.add(i);
+        }
+
+        list.remove(0);
+        list.remove(list.size() - 1);
+        list.remove(list.size() / 2);
+
+        assertEquals(997, list.size());
+
+        while(list.size() > 0){
+            list.remove(0);
+        }
+
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    void testClearLarge() {
+        for (int i = 0; i < 1000; ++i) {
+            list.add(i);
+        }
+
+        list.clear();
+
+        assertEquals(0, list.size());
+        assertThrows(IndexOutOfBoundsException.class, () -> list.get(0));
+    }
+
+    @Test
+    void testSortUsingComparableLarge() {
+        Random random = new Random();
+        for (int i = 0; i < 1000; ++i) {
+            list.add(random.nextInt(10000));
+        }
+
+        list.sort(null);
+
+        for (int i = 1; i < list.size(); ++i) {
+            assertTrue(list.get(i - 1) <= list.get(i));
+        }
+    }
+
+    @Test
+    void testSortUsingComparatorLarge() {
+        Random random = new Random();
+        for (int i = 0; i < 1000; ++i) {
+            list.add(random.nextInt(10000));
+        }
+
+        list.sort((a,b) -> b - a);
+
+        for (int i = 1; i < list.size(); ++i) {
+            assertTrue(list.get(i - 1) >= list.get(i));
+        }
+    }
+
+    @Test
+    void testSetElementLarge() {
+        for (int i = 0; i < 1000; ++i) {
+            list.add(i);
+        }
+
+        list.set(500, 9999);
+
+        assertEquals(9999, list.get(500));
     }
 }
